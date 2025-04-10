@@ -47,7 +47,7 @@ const struct sensorType MQ3_config={
 
     60, //Rs/R0 in clean air
 
-    //Coefficient values calculated (Benzene)
+    //Coefficient values calculated (Alcohol)
     0.3934, //a
 
     -1.504, //b
@@ -188,7 +188,7 @@ const struct sensorType MQ9_config={
     /*
         Linear regression:
     GAS     | a      | b
-    O3      | 0.006071 | 0.8839286
+    O3      | 0.41195 | -0.4708
     */
 const struct sensorType MQ131_config={
     0, //Regression method type
@@ -206,9 +206,9 @@ const struct sensorType MQ131_config={
     /*
       Linear regression:
     GAS      | a       | b
-    H2       | -0.65   | 0.428
-    NH3      | -0.548  | 0.424
-    Toulene  | -0.488   | 0.417
+    H2       | -0.5101   | 0.31988
+    NH3      | -0.47712  | 0.4491
+    Toulene  | -0.21779   | -0.23269
     
     */
 const struct sensorType MQ135_config={
@@ -217,29 +217,57 @@ const struct sensorType MQ135_config={
     1, //Rs/R0 in clean air
 
     //Coefficient values calculated (NH3)
-    -0.548, //a
+    -0.47712, //a
 
-    0.424, //b
+    0.4491, //b
 
     
 };
 
     /*
         Linear regression:
-    GAS     | a      | b
-    NH3     | -0.467 | -0.222
+    GAS     | a        | b
+    NH3     | -0.26406 | -0.24143
     */
-    const struct sensorType MQ137_config={
-        0, //Regression method type
+const struct sensorType MQ137_config={
+    0, //Regression method type
     
-        1, //Rs/R0 in clean air
+    1, //Rs/R0 in clean air
     
-        //Coefficient values calculated (O3)
-        -0.467, //a
+    //Coefficient values calculated (NH3)
+    -0.26406, //a
     
-        -0.222, //b
+    -0.24143, //b
+    };
+
+    /*
+        Linear regression:
+    GAS        | a        | b
+    Alcohol    | -0.46099 | 0.0681
+    Acetone    | -0.52356 | 0.49225
+    Toluene    | -0.4434  | 0.15397
+    */
+const struct sensorType MQ138_config={
+    0, //Regression method type
     
-        
+    1, //Rs/R0 in clean air
+    
+    //Coefficient values calculated (Toluene)
+    -0.4434, //a
+    
+    0.15397, //b
+    };
+
+//Used as the configuration for not yet supported sensors
+const struct sensorType Blank_config={
+    0, //Regression method type
+    
+    0, //Rs/R0 in clean air
+    
+    //Coefficient values calculated 
+    0, //a
+    
+    0, //b
     };
 
 #endif

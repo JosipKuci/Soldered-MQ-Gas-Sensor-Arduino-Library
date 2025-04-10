@@ -1,42 +1,21 @@
+/*
+An example that shows the debug print library functionality
+*/
 // Include the library
 #include <MQ-Sensor-SOLDERED.h>
 
 #define numOfCalibrations 10 //How many readings of R0 we take to get average measurement
 
 //Create an instance of the sensor object
-MQ138 mq138; 
-
-//If you want to measure a different gas or measure using different parameters, you can do that by 
-//Creating a custom confic structure with the values, here we will change the measured gas from toluene
-//to alcohol
-
-
-/*
-    Linear regression:
-    GAS        | a        | b
-    Alcohol    | -0.46099 | 0.0681
-    Acetone    | -0.52356 | 0.49225
-    Toluene    | -0.4434  | 0.15397
-*/
-const struct sensorType MQ138CustomConfig={
-    0, //Regression method type
-    
-    1, //Rs/R0 in clean air
-    
-    //Coefficient values calculated (Alcohol)
-    -0.46099, //a
-    
-    0.0681, //b
-    };
-
+MQ131 mq131; 
 
 void setup()
 {
     // Init the serial port communication at 115200 bauds. It's used to print out measured data.
     Serial.begin(115200);
 
-    //Initialize I2C connection with sensor with custom config
-    if(!mq138.begin(0x30, MQ138CustomConfig))
+    //Initialize I2C connection with sensor, if it fails inform user
+    if(!mq131.begin(0x30))
     {
       Serial.println("Failed to initialize I2C communication, check wiring");
       while(1)
@@ -50,7 +29,7 @@ void setup()
     // This routine not need to execute on every restart, you can load your R0 into flash memory and read it on startup
     
     Serial.print("Calibrating please wait.");
-    bool calibrationResult=mq138.calibrateSensor(numOfCalibrations);
+    bool calibrationResult=mq131.calibrateSensor(numOfCalibrations);
     if(!calibrationResult) //Check if the sensor was properly calibrated
     {
       Serial.println("There was an error reading the sensor, check connection and try again");
@@ -64,7 +43,11 @@ void setup()
 
 void loop()
 {
-  mq138.update();      // Update data, read voltage level from sensor
-  Serial.println("Alcohol: " + String(mq138.readSensor())+"ppm"); // Print the readings to the serial monitor
+  mq131.update();      // Update data, read voltage level from sensor
+  /*
+  Prints all values form and about the sensor, used for calibration and debug purposes, format is:
+  |ADC_In | Equation_V_ADC | Voltage_ADC | Equation_RS  | Resistance_RS | EQ_Ratio | Ratio (RS/R0) | Equation_PPM | PPM |
+  */
+  mq131.serialDebug(); 
   delay(500);        // Sampling frequency
 }

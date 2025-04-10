@@ -53,7 +53,7 @@
 #define SENSOR_DIGITAL_PIN 2
 
 // Create library object for this specific sensor.
-MQ2 mq2(SENSOR_ANALOG_PIN); // Connect sensor to analog input A1, digital pin 2 for digitalRead
+MQ135 mq135(SENSOR_ANALOG_PIN,SENSOR_DIGITAL_PIN); // Connect sensor to analog input A1, digital pin 2 for digitalRead
 
 void setup()
 {
@@ -64,7 +64,7 @@ void setup()
 void loop()
 {
     //
-    if (mq2.digitalRead())
+    if (mq135.digitalRead())
     {
         Serial.println("Alarm high concentrations detected");
     }

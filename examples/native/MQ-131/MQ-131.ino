@@ -1,27 +1,3 @@
-/*
-  MQUnifiedsensor Library - reading an mq8
-
-  Demonstrates the use a mq8 sensor.
-  Library originally added 01 may 2019
-  by Miguel A Califa, Yersson Carrillo, Ghiordy Contreras, Mario Rodriguez
-
-  Added example
-  modified 23 May 2019
-  by Miguel Califa
-
-  Updated library usage
-  modified 26 March 2020
-  by Miguel Califa
-
-  Example is modified by Soldered.com
-
-  Wiring:
-  https://github.com/miguel5612/MQSensorsLib_Docs/blob/master/static/img/MQ_Arduino.PNG
-
-
- This example code is in the public domain.
-
-*/
 
 // Include the library
 #include "MQ-Sensor-SOLDERED.h"
@@ -37,7 +13,7 @@
 #endif
 
 // Create an instance of the object
-MQ8 mq8(SENSOR_ANALOG_PIN);
+MQ131 mq131(SENSOR_ANALOG_PIN);
 
 #define numOfCalibrations 10 //How many readings of R0 we take to get average measurement
 
@@ -46,8 +22,8 @@ void setup()
     // Init the serial port communication at 115200 bauds. It's used to print out measured data.
     Serial.begin(115200);
 
-     // Initialize the sensor
-     mq8.begin();
+    // Initialize the sensor
+    mq131.begin();
     /*****************************  MQ Calibration ********************************************/
     // Explanation:
     // In this routine the sensor will measure the resistance of the sensor after it has been pre-heated for 48h
@@ -55,7 +31,7 @@ void setup()
     // This routine not need to execute on every restart, you can load your R0 into flash memory and read it on startup
     
     Serial.print("Calibrating please wait.");
-    bool calibrationResult=mq8.calibrateSensor(numOfCalibrations);
+    bool calibrationResult=mq131.calibrateSensor(numOfCalibrations);
     if(!calibrationResult) //Check if the sensor was properly calibrated
     {
       Serial.println("There was an error reading the sensor, check connection and try again");
@@ -69,7 +45,7 @@ void setup()
 
 void loop()
 {
-  mq8.update();      // Update data, read voltage level from sensor
-  Serial.println("H2: " + String(mq8.readSensor())+"ppm"); // Print the readings to the serial monitor
+  mq131.update();      // Update data, read voltage level from sensor
+  Serial.println("O3: " + String(mq131.readSensor())+"ppb"); // Print the readings to the serial monitor
   delay(500);        // Sampling frequency
 }

@@ -35,85 +35,41 @@
 #define SENSOR_ANALOG_PIN 5
 #endif
 
-#define RatioMQ2CleanAir (9.83) // RS / R0 = 9.83 ppm
-
-// Create library object for this specific sensor.
+// Create an instance of the object
 MQ2 mq2(SENSOR_ANALOG_PIN);
+
+#define numOfCalibrations 10 //How many readings of R0 we take to get average measurement
 
 void setup()
 {
     // Init the serial port communication at 115200 bauds. It's used to print out measured data.
     Serial.begin(115200);
 
-    // Set math model to calculate the PPM concentration and the value of constants
-    mq2.setRegressionMethod(1); //_PPM =  a*ratio^b
-    mq2.setA(574.25);
-    mq2.setB(-2.222); // Configurate the ecuation values to get LPG concentration
-    /*
-      Exponential regression:
-      Gas    | a      | b
-      H2     | 987.99 | -2.162
-      LPG    | 574.25 | -2.222
-      CO     | 36974  | -3.109
-      Alcohol| 3616.1 | -2.675
-      Propane| 658.71 | -2.168
-    */
+     // Initialize the sensor
+     mq2.begin();
 
-    /*****************************  MQ Init ********************************************/
-    // Remarks: Configure the pin of arduino as input.
-    /************************************************************************************/
-
-    mq2.begin(); // If you have easyC version of this sensor
-                 // you should add here I2C address of sensor
-                 // which is 0x30 by default and can be changed
-                 // by onboard switches labeled with ADDR
-
-    /*
-      //If the RL value is different from 10K please assign your RL value with the following method:
-      mq2.setRL(10);
-    */
-    /*****************************  MQ CAlibration ********************************************/
+    /*****************************  MQ Calibration ********************************************/
     // Explanation:
-    // In this routine the sensor will measure the resistance of the sensor supposing before was pre-heated
-    // and now is on clean air (Calibration conditions), and it will setup R0 value.
-    // We recomend execute this routine only on setup or on the laboratory and save on the eeprom of your arduino
-    // This routine not need to execute to every restart, you can load your R0 if you know the value
-    // Acknowledgements: https://jayconsystems.com/blog/understanding-a-gas-sensor
+    // In this routine the sensor will measure the resistance of the sensor after it has been pre-heated for 48h
+    // and now is in a clean air enviorment, and it will setup the R0 value.
+    // This routine not need to execute on every restart, you can load your R0 into flash memory and read it on startup
+    
     Serial.print("Calibrating please wait.");
-    float calcR0 = 0;
-    for (int i = 1; i <= 10; i++)
+    bool calibrationResult=mq2.calibrateSensor(numOfCalibrations);
+    if(!calibrationResult) //Check if the sensor was properly calibrated
     {
-        mq2.update(); // Update data, the arduino will be read the voltage on the analog pin
-        calcR0 += mq2.calibrate(RatioMQ2CleanAir);
-        Serial.print(".");
+      Serial.println("There was an error reading the sensor, check connection and try again");
+      while(1)
+      {}
     }
-    mq2.setR0(calcR0 / 10);
-    Serial.println("  done!.");
+    Serial.print("Calibration done!");
 
-    if (isinf(calcR0))
-    {
-        Serial.println("Warning: Conection issue founded, R0 is infite (Open circuit detected) please check your "
-                       "wiring and supply");
-        while (1)
-            ;
-    }
-    if (calcR0 == 0)
-    {
-        Serial.println("Warning: Conection issue founded, R0 is zero (Analog pin with short circuit to ground) please "
-                       "check your wiring and supply");
-        while (1)
-            ;
-    }
-    /*****************************  MQ CAlibration ********************************************/
-
-    mq2.serialDebug(true);
+    /*****************************  MQ Calibration ********************************************/
 }
 
 void loop()
 {
-    mq2.update();      // Update data, the arduino will be read the voltage on the analog pin
-    mq2.readSensor();  // Sensor will read PPM concentration using the model and a and b values setted before or in the
-                       // setup
-    mq2.serialDebug(); // Will print the table on the serial port
-    delay(500);        // Sampling frequency
+  mq2.update();      // Update data, read voltage level from sensor
+  Serial.println("LPG: " + String(mq2.readSensor())+"ppm"); // Print the readings to the serial monitor
+  delay(500);        // Sampling frequency
 }

@@ -25,13 +25,6 @@ bool MQ_Sensor::begin(int _addr)
             return false;
         }
     }
-    else
-    {
-        if (aPin != -1)
-            pinMode(aPin, INPUT);
-        if (dPin != -1)
-            pinMode(dPin, INPUT);
-    }
     setConfiguration(this->sensor_type);
     return true;
 }
@@ -57,6 +50,27 @@ bool MQ_Sensor::begin(int _addr, sensorType configcustom)
     setConfiguration(this->sensor_type);
     return true;
 }
+
+void MQ_Sensor::begin()
+{
+    if (aPin != -1)
+        pinMode(aPin, INPUT);
+    if (dPin != -1)
+        pinMode(dPin, INPUT);
+    setConfiguration(this->sensor_type);
+}
+
+void MQ_Sensor::begin(sensorType configcustom)
+{
+    if (aPin != -1)
+        pinMode(aPin, INPUT);
+    if (dPin != -1)
+        pinMode(dPin, INPUT);
+    this->sensor_type=configcustom;
+    setConfiguration(this->sensor_type);
+}
+
+
 
 /**
  * @brief                   Overloaded function for virtual in base class to initialize sensor specific.
